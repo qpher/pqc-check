@@ -1,0 +1,68 @@
+{
+  "name": "pqc-check",
+  "version": "1.0.0",
+  "description": "Scan your codebase for quantum-vulnerable cryptography",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qpher/pqc-check"
+  },
+  "homepage": "https://github.com/qpher/pqc-check",
+  "keywords": [
+    "post-quantum",
+    "cryptography",
+    "security",
+    "scanner",
+    "pqc",
+    "quantum-safe",
+    "kyber",
+    "dilithium",
+    "nist",
+    "vulnerability"
+  ],
+  "type": "module",
+  "bin": {
+    "pqc-check": "./dist/cli.js"
+  },
+  "main": "./dist/scanner/index.js",
+  "types": "./dist/scanner/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/scanner/index.js",
+      "types": "./dist/scanner/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/cli.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src/ tests/",
+    "format": "prettier --write .",
+    "prepublishOnly": "npm run build && npm run test"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "commander": "^12.0.0",
+    "fast-glob": "^3.3.0",
+    "ignore": "^6.0.0",
+    "picocolors": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@vitest/coverage-v8": "^2.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.2.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^2.0.0"
+  }
+}

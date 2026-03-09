@@ -1,0 +1,66 @@
+import { definePattern } from "./types.js";
+
+const GO_EXT = [".go"];
+
+export const goPatterns = [
+  definePattern(
+    "PQC-GO-001",
+    "RSA Key Generation",
+    /\brsa\.GenerateKey\s*\(|\brsa\.GenerateMultiPrimeKey\s*\(/,
+    "HIGH",
+    "RSA_KEY_GENERATION",
+    GO_EXT,
+    "RSA key generation is vulnerable to quantum attacks using Shor's algorithm",
+    "Migrate to ML-KEM-768 (Kyber768) for key encapsulation",
+  ),
+  definePattern(
+    "PQC-GO-002",
+    "RSA Encryption",
+    /\brsa\.EncryptOAEP\s*\(|\brsa\.EncryptPKCS1v15\s*\(/,
+    "HIGH",
+    "RSA_ENCRYPTION",
+    GO_EXT,
+    "RSA encryption is vulnerable to quantum attacks using Shor's algorithm",
+    "Migrate to ML-KEM-768 (Kyber768) KEM-DEM hybrid encryption",
+  ),
+  definePattern(
+    "PQC-GO-003",
+    "RSA Signing",
+    /\brsa\.SignPKCS1v15\s*\(|\brsa\.SignPSS\s*\(/,
+    "MEDIUM",
+    "RSA_SIGNING",
+    GO_EXT,
+    "RSA signatures can be forged by a quantum attacker",
+    "Migrate to ML-DSA-65 (Dilithium3) for digital signatures",
+  ),
+  definePattern(
+    "PQC-GO-004",
+    "ECDSA Signing",
+    /\becdsa\.GenerateKey\s*\(|\belliptic\.P256\s*\(|\belliptic\.P384\s*\(/,
+    "MEDIUM",
+    "ECDSA_EDDSA",
+    GO_EXT,
+    "ECDSA is vulnerable to quantum attacks using Shor's algorithm",
+    "Migrate to ML-DSA-65 (Dilithium3) for digital signatures",
+  ),
+  definePattern(
+    "PQC-GO-005",
+    "Ed25519 Signing",
+    /\bed25519\.GenerateKey\s*\(|\bed25519\.NewKeyFromSeed\s*\(/,
+    "MEDIUM",
+    "ECDSA_EDDSA",
+    GO_EXT,
+    "Ed25519 signatures are vulnerable to quantum attacks",
+    "Migrate to ML-DSA-65 (Dilithium3) for digital signatures",
+  ),
+  definePattern(
+    "PQC-GO-006",
+    "X25519 / ECDH Key Exchange",
+    /\becdh\.P256\s*\(|\becdh\.X25519\s*\(|\bcurve25519\.ScalarMult\s*\(/,
+    "HIGH",
+    "DH_KEY_EXCHANGE",
+    GO_EXT,
+    "ECDH/X25519 key exchange is vulnerable to quantum attacks (harvest now, decrypt later)",
+    "Migrate to ML-KEM-768 (Kyber768) for key encapsulation",
+  ),
+];

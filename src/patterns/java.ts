@@ -1,0 +1,66 @@
+import { definePattern } from "./types.js";
+
+const JAVA_EXT = [".java", ".kt"];
+
+export const javaPatterns = [
+  definePattern(
+    "PQC-JV-001",
+    "RSA Key Generation",
+    /\bKeyPairGenerator\.getInstance\s*\(\s*["']RSA["']\)|\bRSAKeyGenParameterSpec\b/,
+    "HIGH",
+    "RSA_KEY_GENERATION",
+    JAVA_EXT,
+    "RSA key generation is vulnerable to quantum attacks using Shor's algorithm",
+    "Migrate to ML-KEM-768 (Kyber768) for key encapsulation",
+  ),
+  definePattern(
+    "PQC-JV-002",
+    "RSA Encryption",
+    /\bCipher\.getInstance\s*\(\s*["']RSA/,
+    "HIGH",
+    "RSA_ENCRYPTION",
+    JAVA_EXT,
+    "RSA encryption is vulnerable to quantum attacks using Shor's algorithm",
+    "Migrate to ML-KEM-768 (Kyber768) KEM-DEM hybrid encryption",
+  ),
+  definePattern(
+    "PQC-JV-003",
+    "RSA Signing",
+    /\bSignature\.getInstance\s*\(\s*["']SHA\d+withRSA/,
+    "MEDIUM",
+    "RSA_SIGNING",
+    JAVA_EXT,
+    "RSA signatures can be forged by a quantum attacker",
+    "Migrate to ML-DSA-65 (Dilithium3) for digital signatures",
+  ),
+  definePattern(
+    "PQC-JV-004",
+    "ECDSA Signing",
+    /\bKeyPairGenerator\.getInstance\s*\(\s*["']EC["']\)|\bSignature\.getInstance\s*\(\s*["']SHA\d+withECDSA/,
+    "MEDIUM",
+    "ECDSA_EDDSA",
+    JAVA_EXT,
+    "ECDSA is vulnerable to quantum attacks using Shor's algorithm",
+    "Migrate to ML-DSA-65 (Dilithium3) for digital signatures",
+  ),
+  definePattern(
+    "PQC-JV-005",
+    "DH Key Exchange",
+    /\bKeyAgreement\.getInstance\s*\(\s*["']DH["']\)|\bDHParameterSpec\b/,
+    "HIGH",
+    "DH_KEY_EXCHANGE",
+    JAVA_EXT,
+    "Diffie-Hellman key exchange is vulnerable to quantum attacks",
+    "Migrate to ML-KEM-768 (Kyber768) for key encapsulation",
+  ),
+  definePattern(
+    "PQC-JV-006",
+    "Bouncy Castle RSA",
+    /\bRSAKeyPairGenerator\b|\bRSAEngine\b/,
+    "HIGH",
+    "RSA_KEY_GENERATION",
+    JAVA_EXT,
+    "Bouncy Castle RSA is vulnerable to quantum attacks",
+    "Migrate to ML-KEM-768 (Kyber768) for key encapsulation",
+  ),
+];
