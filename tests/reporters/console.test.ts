@@ -87,11 +87,17 @@ describe("Console reporter", () => {
     expect(output).toContain("LOW RISK");
   });
 
-  it("shows success message when no findings", async () => {
+  it("shows an honest no-match message (not a false quantum-safe guarantee) when no findings", async () => {
     const options = defaultOptions(path.join(FIXTURES, "clean-project"));
     const result = await scan(options);
     const output = formatConsole(result, options);
-    expect(output).toContain("quantum-safe");
+    expect(output).toContain("No known quantum-vulnerable patterns matched.");
+    expect(output).toContain("Detection coverage varies by language");
+    // Must NOT claim the code IS quantum-safe — that's a dangerous false-confidence message.
+    // (The caveat line legitimately says "not a guarantee of quantum-safety", so we ban the
+    //  specific old claim rather than the substring "quantum-safe".)
+    expect(output).not.toContain("looks quantum-safe");
+    expect(output).not.toContain("Your code looks quantum-safe");
   });
 
   it("includes file paths in output", async () => {

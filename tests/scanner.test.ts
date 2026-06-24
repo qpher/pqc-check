@@ -1,9 +1,15 @@
 import { describe, it, expect } from "vitest";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { scan } from "../src/scanner/index.js";
 import type { ScanOptions } from "../src/types.js";
 
 const FIXTURES = path.resolve(__dirname, "fixtures");
+const PKG_VERSION = (
+  JSON.parse(readFileSync(path.resolve(__dirname, "..", "package.json"), "utf8")) as {
+    version: string;
+  }
+).version;
 
 function defaultOptions(target: string): ScanOptions {
   return {
@@ -98,7 +104,7 @@ describe("Scanner integration", () => {
 
   it("reports version string", async () => {
     const result = await scan(defaultOptions(path.join(FIXTURES, "clean-project")));
-    expect(result.version).toBe("1.0.0");
+    expect(result.version).toBe(PKG_VERSION);
   });
 
   it("reports duration", async () => {

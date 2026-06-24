@@ -30,8 +30,9 @@ export function formatConsole(result: ScanResult, options: ScanOptions): string 
   const hasFindings = hasHigh || hasMedium || (options.showLow && hasLow);
 
   if (!hasFindings) {
+    lines.push(pc.green("  No known quantum-vulnerable patterns matched."));
     lines.push(
-      pc.green("  No quantum-vulnerable patterns found. Your code looks quantum-safe!"),
+      pc.dim("  Detection coverage varies by language — this is not a guarantee of quantum-safety."),
     );
     lines.push("");
     return lines.join("\n");

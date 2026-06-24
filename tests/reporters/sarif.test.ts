@@ -1,10 +1,16 @@
 import { describe, it, expect } from "vitest";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { formatSarif } from "../../src/reporters/sarif.js";
 import { scan } from "../../src/scanner/index.js";
 import type { ScanOptions } from "../../src/types.js";
 
 const FIXTURES = path.resolve(__dirname, "..", "fixtures");
+const PKG_VERSION = (
+  JSON.parse(readFileSync(path.resolve(__dirname, "..", "..", "package.json"), "utf8")) as {
+    version: string;
+  }
+).version;
 
 function defaultOptions(target: string): ScanOptions {
   return {
@@ -37,7 +43,7 @@ describe("SARIF reporter", () => {
     const sarif = JSON.parse(formatSarif(result));
     const driver = sarif.runs[0].tool.driver;
     expect(driver.name).toBe("pqc-check");
-    expect(driver.version).toBe("1.0.0");
+    expect(driver.version).toBe(PKG_VERSION);
     expect(driver.informationUri).toContain("pqc-check");
   });
 

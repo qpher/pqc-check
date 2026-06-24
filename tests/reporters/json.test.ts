@@ -1,10 +1,16 @@
 import { describe, it, expect } from "vitest";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { formatJson } from "../../src/reporters/json.js";
 import { scan } from "../../src/scanner/index.js";
 import type { ScanOptions } from "../../src/types.js";
 
 const FIXTURES = path.resolve(__dirname, "..", "fixtures");
+const PKG_VERSION = (
+  JSON.parse(readFileSync(path.resolve(__dirname, "..", "..", "package.json"), "utf8")) as {
+    version: string;
+  }
+).version;
 
 function defaultOptions(target: string): ScanOptions {
   return {
@@ -29,7 +35,7 @@ describe("JSON reporter", () => {
     const result = await scan(defaultOptions(path.join(FIXTURES, "python-project")));
     const parsed = JSON.parse(formatJson(result));
     expect(parsed.scanner).toBe("pqc-check");
-    expect(parsed.version).toBe("1.0.0");
+    expect(parsed.version).toBe(PKG_VERSION);
   });
 
   it("includes timestamp", async () => {

@@ -4,8 +4,8 @@ import type { ScanOptions, ScanResult, Finding } from "../types.js";
 import { walkFiles } from "./file-walker.js";
 import { matchPatterns } from "./pattern-engine.js";
 import { getPatternsForFile, getExtensionsForLanguages } from "../patterns/index.js";
+import { VERSION } from "../version.js";
 
-const VERSION = "1.0.0";
 const CONCURRENCY = 10;
 
 /** Run a scan against the target path */

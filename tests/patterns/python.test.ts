@@ -41,6 +41,14 @@ describe("Python patterns", () => {
       expect(pattern.regex.test('cipher = PKCS1_v1_5.new(key)')).toBe(true);
     });
 
+    it("matches cryptography's public_key.encrypt(..., padding.OAEP(...))", () => {
+      expect(
+        pattern.regex.test(
+          "ciphertext = public_key.encrypt(data, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))",
+        ),
+      ).toBe(true);
+    });
+
     it("has HIGH risk", () => {
       expect(pattern.risk).toBe("HIGH");
     });

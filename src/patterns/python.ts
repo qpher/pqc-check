@@ -15,8 +15,8 @@ export const pythonPatterns = [
   ),
   definePattern(
     "PQC-PY-002",
-    "RSA Encryption (PKCS1)",
-    /\bPKCS1_OAEP\.new\s*\(|\bPKCS1_v1_5\.new\s*\(/,
+    "RSA Encryption (OAEP/PKCS1)",
+    /\bPKCS1_OAEP\.new\s*\(|\bPKCS1_v1_5\.new\s*\(|\bpadding\.OAEP\s*\(/,
     "HIGH",
     "RSA_ENCRYPTION",
     PY_EXT,

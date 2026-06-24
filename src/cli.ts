@@ -4,9 +4,8 @@ import { scan } from "./scanner/index.js";
 import { formatConsole } from "./reporters/console.js";
 import { formatJson } from "./reporters/json.js";
 import { formatSarif } from "./reporters/sarif.js";
+import { VERSION } from "./version.js";
 import type { ScanOptions } from "./types.js";
-
-const VERSION = "1.0.0";
 
 const program = new Command();
 
