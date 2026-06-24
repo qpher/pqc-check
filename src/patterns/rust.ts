@@ -53,4 +53,14 @@ export const rustPatterns = [
     "X25519 key exchange is vulnerable to quantum attacks (harvest now, decrypt later)",
     "Migrate to ML-KEM-768 (Kyber768) for key encapsulation",
   ),
+  definePattern(
+    "PQC-RS-006",
+    "ECDH Key Exchange",
+    /\bp256::ecdh\b|\bp384::ecdh\b|\bk256::ecdh\b|\bring::agreement\b/,
+    "HIGH",
+    "DH_KEY_EXCHANGE",
+    RS_EXT,
+    "ECDH key exchange is vulnerable to quantum attacks (harvest now, decrypt later)",
+    "Migrate to ML-KEM-768 (Kyber768) for key encapsulation",
+  ),
 ];

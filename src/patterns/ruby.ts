@@ -33,4 +33,14 @@ export const rubyPatterns = [
     "Diffie-Hellman key exchange is vulnerable to quantum attacks",
     "Migrate to ML-KEM-768 (Kyber768) for key encapsulation",
   ),
+  definePattern(
+    "PQC-RB-004",
+    "ECDH Key Exchange",
+    /\.dh_compute_key\s*\(|\.derive\s*\(/,
+    "HIGH",
+    "DH_KEY_EXCHANGE",
+    RB_EXT,
+    "ECDH key exchange is vulnerable to quantum attacks (harvest now, decrypt later)",
+    "Migrate to ML-KEM-768 (Kyber768) for key encapsulation",
+  ),
 ];

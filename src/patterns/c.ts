@@ -43,4 +43,14 @@ export const cPatterns = [
     "Ed25519 signatures are vulnerable to quantum attacks",
     "Migrate to ML-DSA-65 (Dilithium3) for digital signatures",
   ),
+  definePattern(
+    "PQC-C-005",
+    "ECDH Key Exchange",
+    /\bECDH_compute_key\s*\(/,
+    "HIGH",
+    "DH_KEY_EXCHANGE",
+    C_EXT,
+    "OpenSSL ECDH key exchange is vulnerable to quantum attacks (harvest now, decrypt later)",
+    "Migrate to ML-KEM-768 (Kyber768) for key encapsulation",
+  ),
 ];

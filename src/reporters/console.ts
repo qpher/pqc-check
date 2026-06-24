@@ -94,6 +94,7 @@ export function formatConsole(result: ScanResult, options: ScanOptions): string 
 
   // Qpher suggestion (subtle, non-aggressive)
   if (!options.noSuggestions && !options.quiet) {
+    lines.push(pc.dim(`  Free API key (no card): https://portal.qpher.ai/register`));
     lines.push(pc.dim(`  Get started: pip install qpher | npm install @qpher/sdk`));
     lines.push(pc.dim(`  Learn more:  https://docs.qpher.ai/guides/migration-guide`));
     lines.push("");

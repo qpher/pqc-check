@@ -157,4 +157,24 @@ describe("Python patterns", () => {
       expect(pattern.category).toBe("HASH_FUNCTION");
     });
   });
+
+  describe("PQC-PY-010: ECDH Key Exchange", () => {
+    const pattern = findPattern("PQC-PY-010");
+
+    it("matches private_key.exchange(ec.ECDH(), peer)", () => {
+      expect(pattern.regex.test("shared = private_key.exchange(ec.ECDH(), peer_public_key)")).toBe(true);
+    });
+
+    it("does not match ec.SECP256R1 (ECDSA curve, not ECDH)", () => {
+      expect(pattern.regex.test("ec.generate_private_key(ec.SECP256R1())")).toBe(false);
+    });
+
+    it("has HIGH risk", () => {
+      expect(pattern.risk).toBe("HIGH");
+    });
+
+    it("belongs to DH_KEY_EXCHANGE category", () => {
+      expect(pattern.category).toBe("DH_KEY_EXCHANGE");
+    });
+  });
 });

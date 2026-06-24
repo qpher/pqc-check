@@ -68,19 +68,23 @@ describe("JavaScript patterns", () => {
     });
   });
 
-  describe("PQC-JS-004: ECDSA / ECDH", () => {
+  describe("PQC-JS-004: ECDSA (Web Crypto)", () => {
     const pattern = findPattern("PQC-JS-004");
 
     it("matches ECDSA", () => {
       expect(pattern.regex.test('{ name: "ECDSA", namedCurve: "P-256" }')).toBe(true);
     });
 
-    it("matches ECDH", () => {
-      expect(pattern.regex.test('{ name: "ECDH", namedCurve: "P-256" }')).toBe(true);
+    it("does not match ECDH (now PQC-JS-009)", () => {
+      expect(pattern.regex.test('{ name: "ECDH", namedCurve: "P-256" }')).toBe(false);
     });
 
     it("has MEDIUM risk", () => {
       expect(pattern.risk).toBe("MEDIUM");
+    });
+
+    it("belongs to ECDSA_EDDSA category", () => {
+      expect(pattern.category).toBe("ECDSA_EDDSA");
     });
   });
 
@@ -141,6 +145,30 @@ describe("JavaScript patterns", () => {
 
     it("has HIGH risk", () => {
       expect(pattern.risk).toBe("HIGH");
+    });
+  });
+
+  describe("PQC-JS-009: ECDH (Web Crypto)", () => {
+    const pattern = findPattern("PQC-JS-009");
+
+    it("matches ECDH key agreement", () => {
+      expect(pattern.regex.test('{ name: "ECDH", namedCurve: "P-256" }')).toBe(true);
+    });
+
+    it("matches crypto.subtle.deriveKey with ECDH", () => {
+      expect(pattern.regex.test('crypto.subtle.deriveKey({ name: "ECDH", public: peerKey }, ...)')).toBe(true);
+    });
+
+    it("does not match ECDSA (now PQC-JS-004)", () => {
+      expect(pattern.regex.test('{ name: "ECDSA" }')).toBe(false);
+    });
+
+    it("has HIGH risk", () => {
+      expect(pattern.risk).toBe("HIGH");
+    });
+
+    it("belongs to DH_KEY_EXCHANGE category", () => {
+      expect(pattern.category).toBe("DH_KEY_EXCHANGE");
     });
   });
 });

@@ -63,4 +63,14 @@ export const javaPatterns = [
     "Bouncy Castle RSA is vulnerable to quantum attacks",
     "Migrate to ML-KEM-768 (Kyber768) for key encapsulation",
   ),
+  definePattern(
+    "PQC-JV-007",
+    "ECDH Key Exchange",
+    /\bKeyAgreement\.getInstance\s*\(\s*["']ECDHC?["']/,
+    "HIGH",
+    "DH_KEY_EXCHANGE",
+    JAVA_EXT,
+    "ECDH key exchange is vulnerable to quantum attacks (harvest now, decrypt later)",
+    "Migrate to ML-KEM-768 (Kyber768) for key encapsulation",
+  ),
 ];

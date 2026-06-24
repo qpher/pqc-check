@@ -102,4 +102,32 @@ describe("Java patterns", () => {
       expect(pattern.risk).toBe("HIGH");
     });
   });
+
+  describe("PQC-JV-007: ECDH Key Exchange", () => {
+    const pattern = findPattern("PQC-JV-007");
+
+    it('matches KeyAgreement.getInstance("ECDH")', () => {
+      expect(pattern.regex.test('KeyAgreement ka = KeyAgreement.getInstance("ECDH");')).toBe(true);
+    });
+
+    it("matches the ECDHC cofactor variant", () => {
+      expect(pattern.regex.test('KeyAgreement.getInstance("ECDHC")')).toBe(true);
+    });
+
+    it('matches the provider-arg form getInstance("ECDH", "BC")', () => {
+      expect(pattern.regex.test('KeyAgreement.getInstance("ECDH", "BC")')).toBe(true);
+    });
+
+    it('does not match KeyAgreement.getInstance("DH")', () => {
+      expect(pattern.regex.test('KeyAgreement.getInstance("DH")')).toBe(false);
+    });
+
+    it("has HIGH risk", () => {
+      expect(pattern.risk).toBe("HIGH");
+    });
+
+    it("belongs to DH_KEY_EXCHANGE category", () => {
+      expect(pattern.category).toBe("DH_KEY_EXCHANGE");
+    });
+  });
 });

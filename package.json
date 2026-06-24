@@ -1,6 +1,6 @@
 {
   "name": "pqc-check",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Scan your codebase for quantum-vulnerable cryptography",
   "license": "MIT",
   "repository": {
@@ -18,7 +18,13 @@
     "kyber",
     "dilithium",
     "nist",
-    "vulnerability"
+    "vulnerability",
+    "harvest-now-decrypt-later",
+    "ml-kem",
+    "ml-dsa",
+    "ecdh",
+    "static-analysis",
+    "crypto-agility"
   ],
   "type": "module",
   "bin": {

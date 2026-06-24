@@ -33,4 +33,14 @@ export const phpPatterns = [
     "Diffie-Hellman key exchange is vulnerable to quantum attacks",
     "Migrate to ML-KEM-768 (Kyber768) for key encapsulation",
   ),
+  definePattern(
+    "PQC-PHP-004",
+    "ECDH Key Exchange",
+    /\bopenssl_pkey_derive\s*\(|\bsodium_crypto_scalarmult\b/,
+    "HIGH",
+    "DH_KEY_EXCHANGE",
+    PHP_EXT,
+    "ECDH key exchange is vulnerable to quantum attacks (harvest now, decrypt later)",
+    "Migrate to ML-KEM-768 (Kyber768) for key encapsulation",
+  ),
 ];

@@ -93,4 +93,14 @@ export const pythonPatterns = [
     "SHA-256/512 are quantum-resistant; no action needed (Grover's provides only quadratic speedup)",
     "No action needed — SHA-256/512 are considered quantum-resistant",
   ),
+  definePattern(
+    "PQC-PY-010",
+    "ECDH Key Exchange",
+    /\bec\.ECDH\s*\(/,
+    "HIGH",
+    "DH_KEY_EXCHANGE",
+    PY_EXT,
+    "ECDH key exchange is vulnerable to quantum attacks (harvest now, decrypt later)",
+    "Migrate to ML-KEM-768 (Kyber768) for key encapsulation",
+  ),
 ];

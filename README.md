@@ -144,6 +144,7 @@ Found quantum-vulnerable code? Here are your options:
 |----------|------|
 | **PQC Migration Guide** | [docs.qpher.ai/guides/migration-guide](https://docs.qpher.ai/guides/migration-guide) |
 | **Qpher PQC APIs** | [qpher.ai](https://qpher.ai) — drop-in encryption + signatures |
+| **Free API key** | [portal.qpher.ai/register](https://portal.qpher.ai/register) — free tier, no credit card |
 | **Open Quantum Safe** | [openquantumsafe.org](https://openquantumsafe.org) — open-source liboqs |
 | **NIST Standards** | [FIPS 203](https://csrc.nist.gov/pubs/fips/203/final) (ML-KEM) · [FIPS 204](https://csrc.nist.gov/pubs/fips/204/final) (ML-DSA) |
 
