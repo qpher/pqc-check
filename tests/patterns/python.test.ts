@@ -85,6 +85,16 @@ describe("Python patterns", () => {
       expect(pattern.regex.test('curve = ec.SECP384R1')).toBe(true);
     });
 
+    it("matches the ec.ECDSA() signing call (FC-P2)", () => {
+      expect(
+        pattern.regex.test("sig = key.sign(data, ec.ECDSA(hashes.SHA256()))"),
+      ).toBe(true);
+    });
+
+    it("does not match a benign ec.ECDSA substring (FC-P2)", () => {
+      expect(pattern.regex.test("result = spec.ECDSA(x)")).toBe(false);
+    });
+
     it("has MEDIUM risk", () => {
       expect(pattern.risk).toBe("MEDIUM");
     });

@@ -5,6 +5,7 @@ import { formatConsole } from "./reporters/console.js";
 import { formatJson } from "./reporters/json.js";
 import { formatSarif } from "./reporters/sarif.js";
 import { VERSION } from "./version.js";
+import { resolveLanguageTokens } from "./patterns/index.js";
 import type { ScanOptions } from "./types.js";
 
 const program = new Command();
@@ -18,24 +19,41 @@ program
   .option("--lang <languages>", "Comma-separated list of languages to scan")
   .option("--show-low", "Show LOW risk findings", false)
   .option("--ignore <patterns>", "Comma-separated glob patterns to ignore")
-  .option("--no-suggestions", "Hide Qpher migration suggestions")
+  .option("--no-suggestions", "Hide the Qpher upsell footer")
   .option("--quiet", "Suppress banner and branding", false)
   .action(async (target: string, opts) => {
+    // Validate format
+    if (!["console", "json", "sarif"].includes(opts.format)) {
+      console.error(`Error: Invalid format "${opts.format}". Use: console, json, sarif`);
+      process.exit(2);
+    }
+
+    // FC-P1: resolve + validate --lang. Unknown tokens fail loud (exit 2) instead
+    // of silently scanning the whole tree; aliases map to canonical names.
+    let languages: string[] = [];
+    if (opts.lang) {
+      const { resolved, unknown } = resolveLanguageTokens(opts.lang.split(","));
+      if (unknown.length > 0) {
+        console.error(
+          `Error: unknown --lang value(s): ${unknown.join(", ")}. ` +
+            `Valid: python, javascript, go, java, rust, c, ruby, php, config ` +
+            `(aliases: ts/js → javascript, py → python, rs → rust, rb → ruby, ` +
+            `kotlin → java, cpp → c, yaml/yml/toml/ini → config).`,
+        );
+        process.exit(2);
+      }
+      languages = resolved;
+    }
+
     const options: ScanOptions = {
       target,
-      languages: opts.lang ? opts.lang.split(",").map((l: string) => l.trim()) : [],
+      languages,
       format: opts.format as ScanOptions["format"],
       showLow: opts.showLow,
       ignore: opts.ignore ? opts.ignore.split(",").map((p: string) => p.trim()) : [],
       noSuggestions: !opts.suggestions,
       quiet: opts.quiet,
     };
-
-    // Validate format
-    if (!["console", "json", "sarif"].includes(options.format)) {
-      console.error(`Error: Invalid format "${options.format}". Use: console, json, sarif`);
-      process.exit(2);
-    }
 
     try {
       const result = await scan(options);

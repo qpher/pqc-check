@@ -36,7 +36,7 @@ export const pythonPatterns = [
   definePattern(
     "PQC-PY-004",
     "ECDSA Signing",
-    /\bec\.generate_private_key\s*\(|\bec\.SECP256R1\b|\bec\.SECP384R1\b/,
+    /\bec\.generate_private_key\s*\(|\bec\.SECP256R1\b|\bec\.SECP384R1\b|\bec\.ECDSA\s*\(/,
     "MEDIUM",
     "ECDSA_EDDSA",
     PY_EXT,

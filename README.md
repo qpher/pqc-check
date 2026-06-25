@@ -82,7 +82,7 @@ pqc-check ./my-project --ignore "tests/**,vendor/**"
 # CI-friendly (no banner)
 pqc-check ./my-project --quiet
 
-# Hide migration suggestions
+# Hide the Qpher upsell footer (per-finding migration advice still shows)
 pqc-check ./my-project --no-suggestions
 ```
 
@@ -116,7 +116,9 @@ Findings appear directly in your pull request's **Security** tab.
 |--------|------|----------|
 | **Console** | *(default)* | Human-readable, colored output |
 | **JSON** | `--format json` | Scripting, custom integrations |
-| **SARIF** | `--format sarif` | GitHub Code Scanning, IDE integration |
+| **SARIF** | `--format sarif` | GitHub Code Scanning, IDE integration (SARIF **2.1.0**) |
+
+> **On a clean scan** pqc-check prints: *"No known quantum-vulnerable patterns matched. Detection coverage varies by language — this is not a guarantee of quantum-safety."* It reports what its rules match, not a proof of quantum-safety.
 
 ## Configuration
 
