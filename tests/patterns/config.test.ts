@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { configPatterns } from "../../src/patterns/config.js";
+import { matchPatterns } from "../../src/scanner/pattern-engine.js";
 
 function findPattern(id: string) {
   return configPatterns.find((p) => p.id === id)!;
@@ -21,8 +22,8 @@ describe("Config patterns", () => {
       expect(pattern.regex.test('tls_cert = "/etc/ssl/cert.pem"')).toBe(true);
     });
 
-    it("has MEDIUM risk", () => {
-      expect(pattern.risk).toBe("MEDIUM");
+    it("has LOW risk", () => {
+      expect(pattern.risk).toBe("LOW");
     });
 
     it("applies to config file extensions", () => {
@@ -47,8 +48,8 @@ describe("Config patterns", () => {
       expect(pattern.regex.test("ssl_certificate_key /path/to/key")).toBe(true);
     });
 
-    it("has MEDIUM risk", () => {
-      expect(pattern.risk).toBe("MEDIUM");
+    it("has LOW risk", () => {
+      expect(pattern.risk).toBe("LOW");
     });
   });
 
@@ -83,8 +84,30 @@ describe("Config patterns", () => {
       expect(pattern.regex.test("ssl_ciphers kRSA+AES")).toBe(true);
     });
 
-    it("has MEDIUM risk", () => {
-      expect(pattern.risk).toBe("MEDIUM");
+    it("has HIGH risk", () => {
+      expect(pattern.risk).toBe("HIGH");
+    });
+  });
+
+  describe("scan-level severity (M2)", () => {
+    function risksFor(content: string): string[] {
+      return matchPatterns({
+        content,
+        filePath: "/t/tls.conf",
+        rootDir: "/t",
+        patterns: configPatterns,
+      }).map((f) => f.pattern.risk);
+    }
+
+    it("ECDHE-RSA cipher → HIGH present (Harvest Now, Decrypt Later)", () => {
+      const risks = risksFor("ssl_ciphers ECDHE-RSA-AES256-GCM-SHA384;");
+      expect(risks).toContain("HIGH");
+    });
+
+    it("cert/key reference only → no HIGH/MEDIUM (LOW only, exit 0)", () => {
+      const risks = risksFor('ssl_certificate "/etc/ssl/server.pem";');
+      expect(risks).not.toContain("HIGH");
+      expect(risks).not.toContain("MEDIUM");
     });
   });
 });
