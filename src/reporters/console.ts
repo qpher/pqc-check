@@ -71,7 +71,10 @@ export function formatConsole(result: ScanResult, options: ScanOptions): string 
   // Summary
   lines.push(`  ${pc.bold("SUMMARY")}`);
   if (result.summary.high > 0) {
-    const suggestion = getSuggestion("RSA_KEY_GENERATION");
+    const allHighConfig = result.findings.HIGH.every(
+      (f) => f.pattern.category === "CONFIG_FILE",
+    );
+    const suggestion = getSuggestion(allHighConfig ? "CONFIG_FILE" : "RSA_KEY_GENERATION");
     lines.push(
       `  ├── ${pc.red(`${result.summary.high} HIGH`)}    → Migrate to ${suggestion.replacement}`,
     );
@@ -93,11 +96,38 @@ export function formatConsole(result: ScanResult, options: ScanOptions): string 
   }
   lines.push("");
 
-  // Qpher suggestion (subtle, non-aggressive)
+  // Qpher conversion footer — factual, with open-source alternatives (ADR-0030 §1.5)
   if (!options.noSuggestions && !options.quiet) {
-    lines.push(pc.dim(`  Free API key (no card): https://portal.qpher.ai/register`));
-    lines.push(pc.dim(`  Get started: pip install qpher | npm install @qpher/sdk`));
-    lines.push(pc.dim(`  Learn more:  https://docs.qpher.ai/guides/migration-guide`));
+    const actionable = [...result.findings.HIGH, ...result.findings.MEDIUM];
+    const allConfig =
+      actionable.length > 0 && actionable.every((f) => f.pattern.category === "CONFIG_FILE");
+    if (allConfig) {
+      // TLS ciphers / cert references are fixed in server config, not via the SDK.
+      lines.push(`  These are TLS/certificate config findings — fix them in your server config:`);
+      lines.push(
+        `    1. Hybrid TLS guide  ${pc.cyan("https://docs.qpher.ai/guides/hybrid-cryptography")}`,
+      );
+      lines.push(`    2. Self-host option  liboqs / Open Quantum Safe provider for OpenSSL`);
+      lines.push("");
+      lines.push(
+        pc.dim(
+          `  Qpher provides a managed PQC API for application-layer crypto: https://portal.qpher.ai/register`,
+        ),
+      );
+    } else {
+      lines.push(
+        `  Fix it — get a free ${pc.bold("Qpher API key")} (no card), then migrate your calls:`,
+      );
+      lines.push(`    1. Get your key      ${pc.cyan("https://portal.qpher.ai/register")}`);
+      lines.push(`    2. Install the SDK   pip install qpher   (or npm install @qpher/sdk)`);
+      lines.push(
+        `    3. Migration guide   ${pc.cyan("https://docs.qpher.ai/guides/migration-guide")}`,
+      );
+      lines.push("");
+      lines.push(
+        pc.dim(`  Prefer to self-host? liboqs / Open Quantum Safe are open-source alternatives.`),
+      );
+    }
     lines.push("");
   }
 

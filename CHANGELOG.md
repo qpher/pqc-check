@@ -3,6 +3,21 @@
 All notable changes to `pqc-check` are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2026-06-26
+
+### Changed
+
+- **Clearer post-scan guidance.** When code findings are present, the footer now
+  shows an ordered path — get a free API key, install the SDK, follow the
+  migration guide — instead of three separate lines.
+- **Config-only scans get config-appropriate guidance.** When every finding is a
+  TLS/certificate config issue (e.g. `ECDHE-RSA`), the summary and footer point
+  at server-config / hybrid-TLS guidance instead of the application SDK, and no
+  longer suggest "Migrate to ML-KEM-768" (which applies to application-layer
+  crypto, not a cipher suite line).
+- Open-source alternatives (liboqs / Open Quantum Safe) are named alongside the
+  hosted option, consistent across both code and config guidance.
+
 ## [1.3.0] - 2026-06-25
 
 ### Changed

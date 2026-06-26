@@ -106,4 +106,34 @@ describe("Console reporter", () => {
     const output = formatConsole(result, options);
     expect(output).toContain("auth.py");
   });
+
+  // --- Conversion-footer invariants (ADR-0030 §1.5 + accuracy) ---
+
+  it("footer names an open-source alternative (liboqs) — ADR-0030 §1.5", async () => {
+    const options = defaultOptions(path.join(FIXTURES, "python-project"));
+    const result = await scan(options);
+    const output = formatConsole(result, options);
+    expect(output).toContain("liboqs");
+  });
+
+  it("footer does not leak the 'enclave' brand promise into stdout (code findings)", async () => {
+    const options = defaultOptions(path.join(FIXTURES, "python-project"));
+    const result = await scan(options);
+    const output = formatConsole(result, options);
+    expect(output).not.toContain("enclave");
+  });
+
+  it("config-only findings get a server-config CTA, not the SDK CTA", async () => {
+    const options = defaultOptions(path.join(FIXTURES, "config-files"));
+    const result = await scan(options);
+    const output = formatConsole(result, options);
+    // A TLS cipher is fixed in server config — NOT by installing the SDK.
+    expect(output).not.toContain("pip install qpher");
+    // SUMMARY must not tell a config finding to "Migrate to ML-KEM-768".
+    expect(output).not.toContain("ML-KEM-768");
+    // It should route to cert/cipher guidance, name the alternative, and stay enclave-free.
+    expect(output).toContain("server config");
+    expect(output).toContain("liboqs");
+    expect(output).not.toContain("enclave");
+  });
 });
