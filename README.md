@@ -70,6 +70,16 @@ pqc-check ./my-project --format json
 # SARIF output (for GitHub Code Scanning)
 pqc-check ./my-project --format sarif
 
+# CycloneDX 1.6 CBOM (cryptographic inventory for OMB M-23-02 / NIST IR 8413)
+pqc-check ./my-project --format cyclonedx-cbom > cbom.json
+
+# OMB M-23-02 PDF inventory report (federal reporting-ready)
+pqc-check ./my-project --format pdf-report \
+  --agency "Department of Examples" --system "Auth Service" > report.pdf
+
+# Byte-reproducible report / CBOM (CI diffing + federal review)
+pqc-check ./my-project --format pdf-report --reproducible --agency A --system B > report.pdf
+
 # Scan specific languages only
 pqc-check ./my-project --lang python,go
 
@@ -85,6 +95,41 @@ pqc-check ./my-project --quiet
 # Hide the Qpher upsell footer (per-finding migration advice still shows)
 pqc-check ./my-project --no-suggestions
 ```
+
+## Air-Gapped & Classified Networks
+
+pqc-check makes **zero network calls in any mode**. The detection ruleset is
+compiled into the binary, and the scanner only reads the target tree from local
+disk. There is **no telemetry, analytics, phone-home, or remote ruleset fetch**
+in any code path — a guarantee enforced in CI by `tests/offline-guarantee.test.ts`,
+which fails the build if a network import or API is ever introduced.
+
+This makes pqc-check suitable for SIPR / JWICS / agency-internal networks where
+outbound internet is blocked.
+
+```bash
+# Assert air-gapped intent (no behaviour change — already fully offline)
+pqc-check ./my-project --offline
+
+# Export the bundled ruleset for review / signing before transfer to an
+# isolated network
+pqc-check ruleset export ruleset.json
+
+# Validate a reviewed / air-gap-distributed ruleset (round-trips with export)
+pqc-check ruleset import ruleset.json
+
+# List the bundled detection patterns
+pqc-check ruleset list
+```
+
+**Recommended air-gap workflow**: on an internet-connected workstation, install
+pqc-check and `ruleset export` the bundled ruleset; review + sign it per your
+agency process; transfer the package to the classified network via your approved
+process; run `pqc-check --offline` to inventory crypto on classified codebases.
+
+> Signed `.tar.gz` release artifacts with SHA-256 manifests for offline transfer
+> are tracked separately; until then, verify the npm package integrity with
+> `npm pack` + your own checksum before transfer.
 
 ## CI/CD Integration
 
@@ -117,6 +162,8 @@ Findings appear directly in your pull request's **Security** tab.
 | **Console** | *(default)* | Human-readable, colored output |
 | **JSON** | `--format json` | Scripting, custom integrations |
 | **SARIF** | `--format sarif` | GitHub Code Scanning, IDE integration (SARIF **2.1.0**) |
+| **CycloneDX CBOM** | `--format cyclonedx-cbom` | Cryptographic inventory (CycloneDX **1.6** / NIST IR 8413 / OMB M-23-02) |
+| **PDF report** | `--format pdf-report` | Federal reporting-ready PDF (7 OMB M-23-02 sections; `--reproducible` for byte-identical output) |
 
 > **On a clean scan** pqc-check prints: *"No known quantum-vulnerable patterns matched. Detection coverage varies by language — this is not a guarantee of quantum-safety."* It reports what its rules match, not a proof of quantum-safety.
 

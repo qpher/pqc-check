@@ -3,63 +3,73 @@
 All notable changes to `pqc-check` are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.1] - 2026-06-26
-
-### Changed
-
-- **Clearer post-scan guidance.** When code findings are present, the footer now
-  shows an ordered path — get a free API key, install the SDK, follow the
-  migration guide — instead of three separate lines.
-- **Config-only scans get config-appropriate guidance.** When every finding is a
-  TLS/certificate config issue (e.g. `ECDHE-RSA`), the summary and footer point
-  at server-config / hybrid-TLS guidance instead of the application SDK, and no
-  longer suggest "Migrate to ML-KEM-768" (which applies to application-layer
-  crypto, not a cipher suite line).
-- Open-source alternatives (liboqs / Open Quantum Safe) are named alongside the
-  hosted option, consistent across both code and config guidance.
-
-## [1.3.0] - 2026-06-25
-
-### Changed
-
-- **Config-file TLS key-exchange ciphers are now HIGH.** `ECDHE-RSA` / `DHE-RSA`
-  / `kRSA` cipher suites (PQC-CF-004) were graded MEDIUM; they are
-  quantum-vulnerable key exchange (harvest-now-decrypt-later) and are now
-  **HIGH**, consistent with code-level ECDH detection.
-- **Certificate / key file references are now LOW.** `ssl_certificate`
-  (PQC-CF-001) and `.pem` / `.key` references (PQC-CF-002) are informational —
-  the algorithm cannot be confirmed from the config — so they are reported as
-  **LOW** (shown with `--show-low`) instead of MEDIUM.
-
-A config that matches only certificate/key references now exits 0 (was 1); an
-informational reference no longer fails a CI gate. Configs using `ECDHE-RSA` /
-`DHE-RSA` / `kRSA` continue to exit 1 (now HIGH).
-
-## [1.2.0] - 2026-06-25
+## [1.6.0] - 2026-06-27
 
 ### Added
 
-- **Python ECDSA signing-call detection.** The Python rule now also matches
-  `key.sign(data, ec.ECDSA(...))`, not only EC key generation.
+- **OMB M-23-02 PDF inventory report (#263).** New `--format pdf-report`
+  generates a federal-reporting-ready PDF with all seven OMB M-23-02 sections:
+  (1) cover with agency/system/scan-fingerprint, (2) executive summary with
+  traffic-light status, (3) cryptographic inventory table, (4) migration
+  priority ranking (risk + harvest-now-decrypt-later weighting), (5) recommended
+  migration paths (RSA→ML-KEM-1024, ECDSA→ML-DSA-87, …), (6) methodology + tool
+  provenance with the embedded-CBOM SHA-256, (7) appendix with the full embedded
+  CycloneDX 1.6 CBOM.
+  - `--agency <name>` / `--system <name>` populate the report header.
+  - `--reproducible` produces **byte-identical** output for the same scan (fixes
+    PDF metadata dates + file ID, derives the CBOM serial from content, omits
+    all wall-clock timestamps) — for federal review + CI diffing. Also applies to
+    `--format cyclonedx-cbom`.
+  - Dependency: `pdfkit` (~1 MB) — keeps the lightweight-npx positioning
+    (vs a ~150 MB headless-browser approach).
 
-### Changed
+### Notes
 
-- **`--lang` now fails loud on unknown values.** An unknown or mistyped `--lang`
-  value (e.g. `typescript`, `kotlin`, `cpp`, a typo) previously scanned the whole
-  tree silently; it now exits 2 with a helpful message. Aliases are accepted
-  (`ts` / `js` / `py` / `kt` / `cpp` / `golang` / `rb` / `yaml` / …), each
-  mapping to the canonical language.
+- Out of scope for this release (tracked separately): two published example PDFs
+  (case studies) and the `docs.qpher.ai/oss/pqc-check/omb-m-23-02-report` page.
 
-### Documentation
+## [1.5.0] - 2026-06-27
 
-- README accuracy: SARIF output documented as **2.1.0**; the honest clean-scan
-  message; `--no-suggestions` clarified as hiding the upsell footer only.
+### Added
 
-## [1.1.1] - 2026-06-24
+- **CycloneDX 1.6 Cryptographic Bill of Materials (CBOM) output (#261).** New
+  `--format cyclonedx-cbom` emits a NIST IR 8413-aligned CBOM so pqc-check can
+  feed the cryptographic-inventory requirement of OMB M-23-02. Each finding
+  becomes a `cryptographic-asset` component with
+  `cryptoProperties.algorithmProperties` (primitive, cryptoFunctions,
+  parameterSetIdentifier when a key size is detectable, and
+  `nistQuantumSecurityLevel: 0` since every flagged algorithm is
+  quantum-vulnerable) plus `evidence.occurrences[]` pointing at the source
+  location. The BOM carries pqc-check as the generating tool and a
+  `urn:uuid:` serial number.
 
-### Fixed
+## [1.4.0] - 2026-06-27
 
-- CLI version string is now read from `package.json` (single source of truth).
+### Added
+
+- **Air-gapped / classified-network support (#262).** pqc-check makes **zero
+  network calls in any mode** — the detection ruleset is compiled into the
+  binary. New surfaces make that explicit for federal / SIPR / JWICS use:
+  - `--offline` flag on `scan` — documents air-gapped intent and hard-disables
+    any future telemetry (there is none today). Behaviour is unchanged because
+    the scanner is already fully offline.
+  - `pqc-check ruleset export <path>` — write the bundled ruleset to a JSON file
+    an administrator can review, diff, and sign before transfer to an isolated
+    network.
+  - `pqc-check ruleset import <path>` — load + validate a ruleset file
+    (round-trips identically with `export`; fails loud on schema / regex /
+    duplicate-id errors).
+  - `pqc-check ruleset list` — enumerate the bundled patterns.
+  - New `tests/offline-guarantee.test.ts` static guard fails CI if any network
+    import/API is ever introduced into the scanner source.
+
+### Notes
+
+- Telemetry: pqc-check collects and transmits **nothing**. There is no
+  phone-home, analytics, or remote ruleset fetch in any code path.
+- Out of scope for this release (tracked separately): signed `.tar.gz` release
+  artifacts with SHA-256 manifests, and the
+  `docs.qpher.ai/oss/pqc-check/air-gapped` deployment guide.
 
 ## [1.1.0] - 2026-06-23
 

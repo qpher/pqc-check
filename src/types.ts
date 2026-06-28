@@ -83,7 +83,7 @@ export interface ScanOptions {
   /** Specific languages to scan (empty = all) */
   languages: string[];
   /** Output format */
-  format: "console" | "json" | "sarif";
+  format: "console" | "json" | "sarif" | "cyclonedx-cbom" | "pdf-report";
   /** Show LOW risk findings */
   showLow: boolean;
   /** Ignore patterns (glob) */
@@ -92,4 +92,6 @@ export interface ScanOptions {
   noSuggestions: boolean;
   /** Suppress banner/branding */
   quiet: boolean;
+  /** Air-gapped mode: assert zero network access (#262). Optional for back-compat. */
+  offline?: boolean;
 }
